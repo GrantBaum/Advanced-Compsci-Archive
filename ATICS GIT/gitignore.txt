@@ -1,0 +1,2 @@
+i know this is not a proper git ignore. I just wanted to have the link in here bro
+https://github.com/GrantBaum/Advanced-Compsci-Archive

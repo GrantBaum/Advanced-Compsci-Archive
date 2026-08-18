@@ -3,11 +3,9 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 
 //Split function I found at https://stackoverflow.com/questions/289347/using-strtok-with-a-stdstring
-
+//i dont really understand this so i dont really like it. I need to understand this before i continue
 void split(const string& str, const string& delim, vector<string>& parts) {
   size_t start, end = 0;
   while (end < str.size()) {
@@ -43,7 +41,7 @@ int main(int argc, char* argv[]){
     };
 
 //TODO lets read our file and create our vector of people objects first before worrying abt args, so we can have them in mem either way
-
+//@TODO this
 
 
     //if the first arg is the find keyword
@@ -51,22 +49,22 @@ int main(int argc, char* argv[]){
 
         //there must be four total args if this is the case
         if(argc != 4) {
-            cerr << "invalid number of args for find keyword (should be 4)" << endl;
+            std::cerr << "invalid number of args for find keyword (should be 4)" << std::endl;
             return 1;
         }
         else {
-            //get here and were good. Lets print some stuff.
+            //@TODO get here and were good. Lets print some stuff.
         }
     }
     else if(arg1 == "add") {
 
         //there must be ten args now
         if(argc != 10) {
-            cerr << "invalid number of args for add keyword (should be 10)" << endl;
+            std::cerr << "invalid number of args for add keyword (should be 10)" << std::endl;
             return 1;
         }
         else {
-            //once again get here and we can start doing stuff.
+            //@TODO once again get here and we can start doing stuff.
         }
     }
     else {
