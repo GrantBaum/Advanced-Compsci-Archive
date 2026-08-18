@@ -1,0 +1,1 @@
+[[Alice,Bob,Joe,Eve,Travis],[George,Evans,Mackin,Johns,Menghini],[15,16,32,45,27],[aliceInsta,BobIsCool1,AverageJoe,DropperOfEves,menghinitravis],[@wonderland,@bobbyBoy,@shoeless,@eve123,@menghinitravis],[1234567890,4078675309,8374629401,3849502837,3146326364],[alice123@gmail.com,bobsEmail@yahoo.com,joeabc123@orange.co.uk,eve@army.us.mil,tmenghini@micds.org]]
