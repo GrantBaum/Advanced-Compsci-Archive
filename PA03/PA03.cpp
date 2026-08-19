@@ -14,7 +14,11 @@ struct student {
 
 //some helper methods 
 int readData(std::ifstream& inFile){
-    //do when home
+    int num;
+    while(inFile >> num){
+        //will grab the next number grade down the line
+        //i could then make a vector of the people struct and go down the line initializing names and grades
+    }
 }
 int writeData(std::ofstream& outFile){ 
 }
