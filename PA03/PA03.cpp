@@ -17,33 +17,7 @@ struct student {
 //vector of students
 std::vector<student> studentsVec;
 
-//some helper methods 
-int readData(std::ifstream& inFile){
-
-    //needed vars
-    int num;
-    std::string name;
-
-    while(inFile >> name >> num){
-        //will grab the next number grade down the line
-        //i could then make a vector of the people struct and go down the line initializing names and grades
-        student s;
-        s.name = name;
-        s.grade = num;
-        s.letterGrade = calculateGrade(num);
-
-        //this gets the initialized student and creates the vector. SO after reading the file, it is now all in the vector
-        studentsVec.push_back(s);
-    }
-
-    return 0;
-
-}
-
-
-int writeData(std::ofstream& outFile){ 
-}
-
+//some helper methods
 std::string calculateGrade(int grade) {
 
     if(grade >= 90){
@@ -62,7 +36,41 @@ std::string calculateGrade(int grade) {
         return "F"; //YOU FAILED
     }
 }
-int highestScore(student s){
+
+int readData(std::ifstream& inFile){
+
+    //needed vars
+    int num;
+    std::string name;
+
+    while(inFile >> name >> num){ //i need to make sure this will parse with whitespace in between names
+
+        //will grab the next number grade down the line
+        //i could then make a vector of the people struct and go down the line initializing names and grades
+        student s;
+        s.name = name;
+        s.grade = num;
+        s.letterGrade = calculateGrade(num);
+
+        //this gets the initialized student and creates the vector. SO after reading the file, it is now all in the vector
+        studentsVec.push_back(s);
+    }
+
+    return 0;
+
+}
+
+int writeData(std::ofstream& outFile){ 
+
+    for(student s: studentsVec){
+        //needed tostring to concatonate string and int values. Noted.
+        outFile << s.name + " " + std::to_string(s.grade) + " " + s.letterGrade << std::endl;
+    }
+
+    return 0;
+}
+
+int highestScore(){
        int temp = 0;
 
        for(student s : studentsVec) {
@@ -90,13 +98,32 @@ int main(int argc, char* argv[]){
 
     if(argc != 3){
         //this means invalid number of args
-        std::cerr << "Invalid number of arguments" << endl;
+        std::cerr << "Invalid number of arguments" << std::endl;
         return 1;
     }
     else{
         
         //we good lets start doing some stuff
-
+        if(inFile) {
+            //read data
+            readData(inFile); //this is simple
+            //write data
+            if(outFile){
+                writeData(outFile); //this is easy
+            }
+            else {
+                //couldnt open output file
+                std::cerr << "failed to open output file" << std::endl;
+                return 1;
+            }
+            //print highest score
+            std::cout << highestScore() << std::endl;
+        }
+        else {
+            //couldnt open input file
+            std::cerr << "failed to open input file" << std::endl;
+            return 1;
+        }
     }
 
 }
