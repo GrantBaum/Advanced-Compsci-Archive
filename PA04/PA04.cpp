@@ -3,8 +3,6 @@
 #include <stdexcept>
 #include "Fraction.h"
 
-class Fraction {
-
     Fraction(int numerator, int denominator){
         if (denominator == 0) {
             throw invalid_argument("Denominator cannot be zero");
@@ -58,5 +56,4 @@ class Fraction {
     bool operator == (Fraction &other) const{
         return num * other.den == other.num * den;
     }
-    
-}
+
