@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include "Fraction.h"
 
+
     Fraction(int numerator, int denominator){
         if (denominator == 0) {
             throw invalid_argument("Denominator cannot be zero");

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "convert.h"
+#include "convert.cpp"
 
 using namespace std;
 

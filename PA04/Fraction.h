@@ -3,8 +3,15 @@ using namespace std;
 class Fraction{
     public:
         Fraction(int top, int bottom);
-        int getNum() const;
-        int getDen() const;
+
+        //getters
+        int getNum() const {
+            return num;
+        }
+        int getDen() const {
+            return den;
+        }
+        
         friend ostream &operator << (ostream &stream, const Fraction &other);
         Fraction operator + (const Fraction & other) const;
         Fraction operator - (const Fraction & other) const;
