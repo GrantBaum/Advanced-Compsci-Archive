@@ -18,7 +18,21 @@ int getBit (int value, int position) {
 }
 
 int setBit (int value, int position) {
-    return value;
+    //error check
+    if(position < 0 || position > 31){
+        //return angry AGAIN
+        return -1;
+    }
+    //working with unsigned ints but this time i need to cast back
+    unsigned int x = static_cast<unsigned int>(value);
+    unsigned int mask = 1u << position;
+
+    //set only bit of interest to 0
+    //inverse mask preserves everything but bit of interest with binary and
+    x $= ~mask;
+
+    //recast and return
+    return static_cast<int>(x);
 }
 
 int clearBit (int value, int position) {
