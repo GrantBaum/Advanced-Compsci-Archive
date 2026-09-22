@@ -27,7 +27,7 @@ int flt32_left_most_1 (int value) {
   return -1; //if we make it out of the loop the number was zero
 }
 flt32 flt32_abs (flt32 x) {
-  return 0;
+  return clearBit(x, 31); //clears sign bit
 }
 flt32 flt32_negate (flt32 x) {
   return 0;
