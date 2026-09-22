@@ -1,0 +1,18 @@
+# Ignore everything by default...
+*
+# ...but keep folders, so git can look inside them
+!*/
+# ...and keep any file with an extension (.cpp .h .txt and so on)
+!*.*
+# ...and keep Makefiles, since they have no extension
+!Makefile
+# Now ignore the build junk that slipped back in above
+*.o
+*.exe
+*.out
+# Junk files from Windows, WSL and Mac
+*:Zone.Identifier
+.DS_Store
+Thumbs.db
+# Editor settings
+.vscode/
