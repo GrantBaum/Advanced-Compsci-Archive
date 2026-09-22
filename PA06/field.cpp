@@ -1,6 +1,7 @@
 #include "field.h"
-#include <stdio>
 #include <stdexcept>
+#include <bitset> //used for debugging to print binary
+#include <iostream> //used for printing in debugging
 
 int getBit (int value, int position){
     //error check
@@ -106,7 +107,43 @@ int getField (int value, int indx1, int indx2, int isSigned) {
 }
 
 int setField (int oldValue, int indx1, int indx2, int newValue) {
-    
+
+    int hi;
+    int low;
+    int size; //or difference
+
+    //determining hi and low since order is not guarenteed
+    if(indx1 == indx2){
+        //throw cause this shouldnt exist
+        throw std::runtime_error("index range min cannot match max");
+    }
+    if(indx1 > indx2){
+        //input was in order hi, low
+        hi = indx1;
+        low = indx2;
+        size = (hi - low) + 1;
+    }
+    if(indx1 < indx2){
+        //input was in order low, hi
+        hi = indx2;
+        low = indx1;
+        size = (hi - low) + 1;
+    }
+
+    unsigned int oldV = static_cast<unsigned int>(oldValue);
+    unsigned int newV = static_cast<unsigned int>(newValue);
+    unsigned int omask = ((1u << size) - 1) << low; //run of size set bits starting at pos low (mask for old)
+    unsigned int nmask = ((1u << size) - 1); //just a run of ones with size grabbing the right amt of bits from least significant
+
+    omask = ~omask; //inverting mask because we want to set all bits within the field to zero
+    oldV &= omask; //set all bits in field of old to zero
+    newV &= nmask;
+    newV = newV << low;
+    oldV |= newV;
+
+    //cast and return
+    return static_cast<int>(oldV);
+
 }
 
 int fieldFits (int value, int width, int isSigned) {
