@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <bitset> //used for debugging to print binary
 #include <iostream> //used for printing in debugging
+#include <cstdint> //for fixed width integer types
 
 int getBit (int value, int position){
     //error check
@@ -49,7 +50,6 @@ int clearBit (int value, int position){
 
     return static_cast<int>(x);
 }
-
 int getField (int value, int indx1, int indx2, int isSigned) {
     int hi;
     int low;
@@ -105,7 +105,6 @@ int getField (int value, int indx1, int indx2, int isSigned) {
         return static_cast<int>(x);
     }
 }
-
 int setField (int oldValue, int indx1, int indx2, int newValue) {
 
     int hi;
@@ -149,7 +148,30 @@ int setField (int oldValue, int indx1, int indx2, int newValue) {
     return static_cast<int>(oldV);
 
 }
-
 int fieldFits (int value, int width, int isSigned) {
-    return 0;
+
+    if(width > 32) {
+        //need this so it doesnt overload my run of ones alg
+        throw std::runtime_error("specified size does not fit in c++ type int");
+    }
+
+    int max = ((1u << width) - 1);
+    int min = ~max;
+    min = setBit(min, width - 1); //set the most significant bit of the min to 1
+
+    if(isSigned != 0){
+        //signed field
+        max = clearBit(max, width - 1); //clear the most significant bit of the width
+        if(max >= value && min <= value){
+            return 1;
+        }
+        else return 0;
+    }
+    else{
+        if(max >= value){
+            return 1;
+        }
+        else return 0;
+    }
+
 }
