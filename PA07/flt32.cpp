@@ -18,7 +18,13 @@ void flt32_get_all(flt32 x, int* sign, int*exp, int* val) {
 	*val = flt32_get_val(x);
 }
 int flt32_left_most_1 (int value) {
-  return -1;
+  //6 lines instead of ten. get out cannonicaled.
+  for(int i = 31; i >= 0; i--){
+    if(getBit(value, i) == 1){
+      return i;
+    }
+  }
+  return -1; //if we make it out of the loop the number was zero
 }
 flt32 flt32_abs (flt32 x) {
   return 0;
