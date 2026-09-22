@@ -30,7 +30,10 @@ flt32 flt32_abs (flt32 x) {
   return clearBit(x, 31); //clears sign bit
 }
 flt32 flt32_negate (flt32 x) {
-  return 0;
+  if(getBit(x, 31) != 0){
+    return clearBit(x, 31); //negative, so negating turns pos
+  }
+  else return setBit(x, 31); //pos, so negating turns neg
 }
 flt32 flt32_add (flt32 x, flt32 y) {
   return 0;
