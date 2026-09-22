@@ -1,10 +1,12 @@
 #include "field.h"
+#include <stdio>
+#include <stdexcept>
 
 int getBit (int value, int position){
     //error check
     if(position < 0 || position > 31){
-        //dont do anything and return angry
-        return -1;
+        //throw error
+        throw std::runtime_error("entered position invalid for type int [4 bytes]");
     }
     //working with an unsigned int for value and mask
     unsigned int x = static_cast<unsigned int>(value);
@@ -19,8 +21,8 @@ int getBit (int value, int position){
 int setBit (int value, int position){
     //error check
     if(position < 0 || position > 31){
-        //return angry AGAIN
-        return -1;
+        //throw error
+        throw std::runtime_error("entered position invalid for type int [4 bytes]");
     }
     //working with unsigned ints but this time i need to cast back
     unsigned int x = static_cast<unsigned int>(value);
@@ -35,8 +37,8 @@ int setBit (int value, int position){
 int clearBit (int value, int position){
     //error check
     if(position < 0 || position > 31){
-        //mad. upset. pissed even.
-        return -1;
+        //throw error
+        throw std::runtime_error("entered position invalid for type int [4 bytes]");
     }
     unsigned int x = static_cast<unsigned int>(value);
     unsigned int mask = 1u << position;
@@ -54,7 +56,8 @@ int getField (int value, int indx1, int indx2, int isSigned) {
 
     //determining hi and low since order is not guarenteed
     if(indx1 == indx2){
-        //@TODO what should this do
+        //throw cause this shouldnt exist
+        throw std::runtime_error("index range min cannot match max");
     }
     if(indx1 > indx2){
         //input was in order hi, low
@@ -71,6 +74,7 @@ int getField (int value, int indx1, int indx2, int isSigned) {
     if(size >= 31){
         //this will cause my run of ones alg to overflow.
         //this is therefore unsafe and will throw an error.
+        throw std::runtime_error("bit overflow error (check that beginning and end index are in range for type int [4 bytes])");
     }
     unsigned int x = static_cast<unsigned int>(value);
     unsigned int mask = ((1u << size) - 1) << low; //run of size set bits starting at pos low 
@@ -101,8 +105,8 @@ int getField (int value, int indx1, int indx2, int isSigned) {
     }
 }
 
-int setField (int oldValue, int hi, int lo, int newValue) {
-    return 0;
+int setField (int oldValue, int indx1, int indx2, int newValue) {
+    
 }
 
 int fieldFits (int value, int width, int isSigned) {
