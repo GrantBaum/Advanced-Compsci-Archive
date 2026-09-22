@@ -130,6 +130,10 @@ int setField (int oldValue, int indx1, int indx2, int newValue) {
         size = (hi - low) + 1;
     }
 
+    if(size >= 31){
+        throw std::runtime_error("bit overflow error (check that beginning and end index are in range for type int [4 bytes])");
+    }
+
     unsigned int oldV = static_cast<unsigned int>(oldValue);
     unsigned int newV = static_cast<unsigned int>(newValue);
     unsigned int omask = ((1u << size) - 1) << low; //run of size set bits starting at pos low (mask for old)
