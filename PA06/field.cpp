@@ -5,11 +5,9 @@
 #include <cstdint> //for fixed width integer types
 
 int getBit (int value, int position){
-
     //working with an unsigned int for value and mask
     unsigned int x = static_cast<unsigned int>(value);
     unsigned int mask = single(position);
-
     //if there is a one anywhere it means the bit of interest was a one
     if((x & mask) != 0){
         return 1;
@@ -17,11 +15,9 @@ int getBit (int value, int position){
     else return 0;
 }
 int setBit (int value, int position){
-
     //working with unsigned ints but this time i need to cast back
     unsigned int x = static_cast<unsigned int>(value);
     unsigned int mask = single(position);
-
     //set bit of interest to 1 with binary or
     x |= mask;
 
@@ -29,10 +25,8 @@ int setBit (int value, int position){
     return static_cast<int>(x);
 }
 int clearBit (int value, int position){
-
     unsigned int x = static_cast<unsigned int>(value);
     unsigned int mask = single(position);
-
     //invert mask then use and to set only bits of interest to zero
     x &= ~mask;
 
@@ -68,7 +62,6 @@ int getField (int value, int indx1, int indx2, int isSigned) {
 
     unsigned int x = static_cast<unsigned int>(value);
     unsigned int mask = run(size, low);
-
     //x should now only hold the bits of interest in the least significant places
     x &= mask;
     x = x >> low;
@@ -79,7 +72,6 @@ int getField (int value, int indx1, int indx2, int isSigned) {
 
             //the bit is set, so the result should be negative
             unsigned int flip = run(size);
-
             //creates a mask of ones above the most significant bit, flipping to negative
             flip = ~flip;
             x |= flip;
@@ -95,7 +87,6 @@ int getField (int value, int indx1, int indx2, int isSigned) {
     }
 }
 int setField (int oldValue, int indx1, int indx2, int newValue) {
-
     int hi;
     int low;
     int size; //or difference
@@ -125,7 +116,6 @@ int setField (int oldValue, int indx1, int indx2, int newValue) {
     unsigned int newV = static_cast<unsigned int>(newValue);
     unsigned int omask = run(size, low);
     unsigned int nmask = run(size);
-
     omask = ~omask; //inverting mask because we want to set all bits within the field to zero
     oldV &= omask; //set all bits in field of old to zero
     newV &= nmask;
@@ -134,36 +124,33 @@ int setField (int oldValue, int indx1, int indx2, int newValue) {
 
     //cast and return
     return static_cast<int>(oldV);
-
 }
 int fieldFits (int value, int width, int isSigned) {
-
-    if(width > 32) {
-        //need this so it doesnt overload my run of ones alg
-        throw std::runtime_error("specified size does not fit in c++ type int");
+    //first error check
+    if(width > 32 || width <= 0){
+        throw std::runtime_error("invalid size. Make sure it is between 1 and 32");
     }
-
-    int max = single(width - 1);
-    int min = ~max;
-    min = setBit(min, width - 1); //set the most significant bit of the min to 1
-
+    //signed logic
     if(isSigned != 0){
-        //signed field
-        max = clearBit(max, width - 1); //clear the most significant bit of the width
-        if(max >= value && min <= value){
-            return 1;
-        }
-        else return 0;
-    }
-    else{
-        if(max >= value){
-            return 1;
-        }
-        else return 0;
-    }
+        int sMax = static_cast<int>(run(width - 1)); //largest pos
+        int sMin = ~sMax; //smallest neg
 
+        if(value <= sMax && value >= sMin){
+            return 1; //value is in between
+        }
+        else return 0; //doesnt fit
+    }
+    //unsigned logic
+    else {
+        unsigned int unsVal = static_cast<unsigned int>(value);
+        unsigned int unsMax = run(width);
+
+        if(unsVal <= unsMax){
+            return 1; //value fits
+        }
+        else return 0; //value doesnt fit
+    }
 }
-
 //helper methods for run of ones to handle edge cases lazier
 unsigned int run(int size, int start){
     //check for errors first
