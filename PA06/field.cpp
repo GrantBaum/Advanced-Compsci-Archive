@@ -5,14 +5,10 @@
 #include <cstdint> //for fixed width integer types
 
 int getBit (int value, int position){
-    //error check
-    if(position < 0 || position > 31){
-        //throw error
-        throw std::runtime_error("entered position invalid for type int [4 bytes]");
-    }
+
     //working with an unsigned int for value and mask
     unsigned int x = static_cast<unsigned int>(value);
-    unsigned int mask = 1u << position;
+    unsigned int mask = single(position);
 
     //if there is a one anywhere it means the bit of interest was a one
     if((x & mask) != 0){
@@ -21,14 +17,10 @@ int getBit (int value, int position){
     else return 0;
 }
 int setBit (int value, int position){
-    //error check
-    if(position < 0 || position > 31){
-        //throw error
-        throw std::runtime_error("entered position invalid for type int [4 bytes]");
-    }
+
     //working with unsigned ints but this time i need to cast back
     unsigned int x = static_cast<unsigned int>(value);
-    unsigned int mask = 1u << position;
+    unsigned int mask = single(position);
 
     //set bit of interest to 1 with binary or
     x |= mask;
@@ -37,13 +29,9 @@ int setBit (int value, int position){
     return static_cast<int>(x);
 }
 int clearBit (int value, int position){
-    //error check
-    if(position < 0 || position > 31){
-        //throw error
-        throw std::runtime_error("entered position invalid for type int [4 bytes]");
-    }
+
     unsigned int x = static_cast<unsigned int>(value);
-    unsigned int mask = 1u << position;
+    unsigned int mask = single(position);
 
     //invert mask then use and to set only bits of interest to zero
     x &= ~mask;
@@ -54,11 +42,16 @@ int getField (int value, int indx1, int indx2, int isSigned) {
     int hi;
     int low;
     int size; //or difference
-
-    //determining hi and low since order is not guarenteed
+    
+    //error checking FIRST
+    if(indx1 < 0 || indx2 < 0){
+        throw std::runtime_error("bit indicies cannot be less than zero!");
+    }
     if(indx1 == indx2){
-        //throw cause this shouldnt exist
-        throw std::runtime_error("index range min cannot match max");
+        size = 1; //i can just define straight up and set hi and low for later
+        //doesnt matter what i use here
+        hi = indx1;
+        low = indx2;
     }
     if(indx1 > indx2){
         //input was in order hi, low
@@ -72,13 +65,9 @@ int getField (int value, int indx1, int indx2, int isSigned) {
         low = indx1;
         size = (hi - low) + 1;
     }
-    if(size >= 31){
-        //this will cause my run of ones alg to overflow.
-        //this is therefore unsafe and will throw an error.
-        throw std::runtime_error("bit overflow error (check that beginning and end index are in range for type int [4 bytes])");
-    }
+
     unsigned int x = static_cast<unsigned int>(value);
-    unsigned int mask = ((1u << size) - 1) << low; //run of size set bits starting at pos low 
+    unsigned int mask = run(size, low);
 
     //x should now only hold the bits of interest in the least significant places
     x &= mask;
@@ -89,7 +78,7 @@ int getField (int value, int indx1, int indx2, int isSigned) {
         if(getBit(x, size - 1) != 0){
 
             //the bit is set, so the result should be negative
-            unsigned int flip = (1u << size) - 1;
+            unsigned int flip = run(size);
 
             //creates a mask of ones above the most significant bit, flipping to negative
             flip = ~flip;
@@ -111,32 +100,31 @@ int setField (int oldValue, int indx1, int indx2, int newValue) {
     int low;
     int size; //or difference
 
-    //determining hi and low since order is not guarenteed
-    if(indx1 == indx2){
-        //throw cause this shouldnt exist
-        throw std::runtime_error("index range min cannot match max");
+    //error and equals checks
+    if(indx1 < 0 || indx2 < 0){
+        throw std::runtime_error("bit indicies cannot be less than zero!");
     }
+    if(indx1 == indx2){
+        size = 1;
+        hi = indx1;
+        low = indx2;
+    }
+    //determining hi and low since order is not guarenteed
     if(indx1 > indx2){
-        //input was in order hi, low
         hi = indx1;
         low = indx2;
         size = (hi - low) + 1;
     }
     if(indx1 < indx2){
-        //input was in order low, hi
         hi = indx2;
         low = indx1;
         size = (hi - low) + 1;
     }
 
-    if(size >= 31){
-        throw std::runtime_error("bit overflow error (check that beginning and end index are in range for type int [4 bytes])");
-    }
-
     unsigned int oldV = static_cast<unsigned int>(oldValue);
     unsigned int newV = static_cast<unsigned int>(newValue);
-    unsigned int omask = ((1u << size) - 1) << low; //run of size set bits starting at pos low (mask for old)
-    unsigned int nmask = ((1u << size) - 1); //just a run of ones with size grabbing the right amt of bits from least significant
+    unsigned int omask = run(size, low);
+    unsigned int nmask = run(size);
 
     omask = ~omask; //inverting mask because we want to set all bits within the field to zero
     oldV &= omask; //set all bits in field of old to zero
@@ -155,7 +143,7 @@ int fieldFits (int value, int width, int isSigned) {
         throw std::runtime_error("specified size does not fit in c++ type int");
     }
 
-    int max = ((1u << width) - 1);
+    int max = single(width - 1);
     int min = ~max;
     min = setBit(min, width - 1); //set the most significant bit of the min to 1
 
@@ -174,4 +162,42 @@ int fieldFits (int value, int width, int isSigned) {
         else return 0;
     }
 
+}
+
+//helper methods for run of ones to handle edge cases lazier
+unsigned int run(int size, int start){
+    //check for errors first
+    if(size > 32){
+        throw std::runtime_error("size overload error (runFunc). Make sure size is less than / equal to 32 [4 bytes]");
+    }
+    if(start < 0){
+        throw std::runtime_error("bit indicies cannot be less than zero! (runFunc)");
+    }
+    //then handle the edge case
+    if(size == 32){
+        return 0xFFFFFFFF; //hex digit for straight ones
+    }
+
+    //then do the actual alg
+    return ((1u << size) - 1) << start; //run of size set bits starting at pos start
+}
+unsigned int run(int size){
+    //errors
+    if(size > 32){
+        throw std::runtime_error("size overload error (runFunc). Make sure size is less than / equal to 32 [4 bytes]");
+    }
+    //edge case
+    if(size == 32){
+        return 0xFFFFFFFF;
+    }
+
+    return ((1u << size) - 1); //this will start at bit index 0
+}
+unsigned int single(int pos){
+    //error
+    if(pos < 0 || pos > 31){
+        throw std::runtime_error("bit indicies cannot be less than zero or greater than 31 (singleFunc)");
+    }
+
+    else return 1u << pos;
 }

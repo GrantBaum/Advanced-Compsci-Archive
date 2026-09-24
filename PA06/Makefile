@@ -1,33 +1,36 @@
-# Makefile template for CS 270
+# Makefile for CS 270 field project
+# Builds both testField and testAll.
+#
+#   make            build everything
+#   make test       build and run testAll
+#   make clean      delete built files
 
-# List of files
-C_SRCS		= field.cpp testField.cpp
-C_OBJS		= field.o testField.o
-C_HEADERS	= field.h
+CXX      = g++
+CXXFLAGS = -g -std=c++11 -Wall
 
-OBJS		= ${C_OBJS} 
-EXE	        = testField
+EXES = testField testAll
 
-# Compiler and loader commands and flags
-GCC		= g++
-GCC_FLAGS	= -g -std=c++11 -Wall -c
-LD_FLAGS	= -g -std=c++11 -Wall
+all: $(EXES)
 
-# Compile .c files to .o files
-.cpp.o:
-	$(GCC) $(GCC_FLAGS) $<
+# Each program with a main() gets its own target.
+# Both share field.o.
+testField: field.o testField.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
-# Target is the executable
-default: $(OBJS)	
-	$(GCC) $(LD_FLAGS) $(OBJS) -o $(EXE)
+testAll: field.o testAll.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
-# Recompile C objects if headers change
-${C_OBJS}:      ${C_HEADERS}
+# Any .cpp becomes a .o. Rebuild if field.h changes.
+%.o: %.cpp field.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up the directory
+test: testAll
+	./testAll
+
 clean:
-	-rm -f testField 
+	rm -f $(EXES) *.o
 
-# Package the directory
 package:
 	@echo "Packaging up project directory ..."
+
+.PHONY: all test clean package
