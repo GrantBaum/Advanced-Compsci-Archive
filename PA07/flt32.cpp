@@ -1,6 +1,12 @@
 #include "field.h"
 #include "flt32.h"
 
+
+//im gonna use these for my add function because theyre the only masks I will need
+#define SIGN_BYTE_MASK 0x80000000
+#define EXPONENT_BYTE_MASK 0x7F800000
+#define MANTISSA_BYTE_MASK 0x007FFFFF
+
 int flt32_get_sign (flt32 x) {
   return getBit(x, 31); //returns most significant bit
 }
