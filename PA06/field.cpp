@@ -4,6 +4,10 @@
 #include <iostream> //used for printing in debugging
 #include <cstdint> //for fixed width integer types
 
+unsigned int run(int start, int size);
+unsigned int run(int size);
+unsigned int single(int pos);
+
 int getBit (int value, int position){
     //working with an unsigned int for value and mask
     unsigned int x = static_cast<unsigned int>(value);
