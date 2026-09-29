@@ -4,10 +4,6 @@
 #include "field.h"
 #include "flt32.h"
 
-//im gonna use these for my add function because theyre the only masks I will need
-#define SIGN_BYTE_MASK 0x80000000
-#define EXPONENT_BYTE_MASK 0x7F800000
-#define MANTISSA_BYTE_MASK 0x007FFFFF
 
 /** @mainpage CS270 Fall 2014
  *  \htmlinclude "PA4.html"
