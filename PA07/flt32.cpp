@@ -36,7 +36,17 @@ flt32 flt32_negate (flt32 x) {
   else return setBit(x, 31); //pos, so negating turns neg
 }
 flt32 flt32_add (flt32 x, flt32 y) {
-  return 0;
+	
+//get number in binary form
+	//@QUESTION can i get a decimal in the flt32 type? How does it handle that?
+//find leftmost one of mantissa and truncate everything to the left (as i approaches 0 from 22)
+//@TODO can i make an alg that gives me the exponent based on what i truncate? I feel like I should be able to
+//normalize mantissas based on larger exponent
+//truncate anything that is outside the specificity
+//binary and mantissas
+//add the exponent (larger of the two) and sign bit to the front
+	return 0; //not actually. Return what i get as a flt32;
+	
 }
 flt32 flt32_sub (flt32 x, flt32 y) {
   return 0;
