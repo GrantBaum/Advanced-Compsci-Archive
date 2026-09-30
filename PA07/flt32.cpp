@@ -24,7 +24,7 @@ void flt32_get_all(flt32 x, int* sign, int*exp, int* val) {
 	*val = flt32_get_val(x);
 }
 int flt32_left_most_1 (int value) {
-  //6 lines instead of ten. get out cannonicaled.
+  //4 lines instead of ten. get out cannonicaled.
   for(int i = 31; i >= 0; i--){
     if(getBit(value, i) == 1){
       return i;
@@ -41,6 +41,7 @@ flt32 flt32_negate (flt32 x) {
   }
   else return setBit(x, 31); //pos, so negating turns neg
 }
+
 flt32 flt32_add (flt32 x, flt32 y) {
 	
 //get number in binary form
