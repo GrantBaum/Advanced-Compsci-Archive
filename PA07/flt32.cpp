@@ -1,7 +1,6 @@
 #include "field.h"
 #include "flt32.h"
 
-
 //im gonna use these for my add function because theyre the only masks I will need
 #define SIGN_BYTE_MASK 0x80000000
 #define EXPONENT_BYTE_MASK 0x7F800000
@@ -44,6 +43,9 @@ flt32 flt32_negate (flt32 x) {
 
 flt32 flt32_add (flt32 x, flt32 y) {
 	
+  unsigned int sign = flt32 & SIGN_BYTE_MASK;
+  unsigned int exp = flt32 & EXPONENT_BYTE_MASK;
+  unsigned int mantissa = flt32 & MANTISSA_BYTE_MASK;
 //get number in binary form
 	//@QUESTION can i get a decimal in the flt32 type? How does it handle that?
 //find leftmost one of mantissa and truncate everything to the left (as i approaches 0 from 22)
