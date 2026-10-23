@@ -7,7 +7,7 @@
 #include <sstream>
 
 //collection of the things i wanna look for
-std::unordered_set<char> delims = {'(', ')','{','}','[',']'};
+std::unordered_set<char> delims = {'(', ')','{','}','[',']','/'};
 //stuff the program has to remember
 std::string text_; //the char
 size_t pos_ = 0; //position
@@ -23,22 +23,7 @@ struct Token{
 
 std::vector<Token> toks;
 
-//some helper methods
-bool expect(Token current, Token next){
-    if(current.type == Tok::OPEN){
-        //1
-        if(next.type == Tok::CLOSE){
-            if(current.txt == next.txt){
-                return true; //1
-            }
-        }
-        //2
-        else if(next.type == Tok::OPEN){
-            return true; //2
-        }
-    }
-    else return false;
-}
+//helpers
 bool atEnd() {
     if(pos_ >= text_.size()){
         return true;
@@ -81,6 +66,8 @@ char advance() {
             return "CLOSE";
         case Tok::INVALID:
             return "INVALID";
+        case Tok::COMMENT:
+            return "COMMENT";
     }
     return "?";
 }
@@ -102,12 +89,37 @@ int main(int argc, char* argv[]){
         if(delims.find(peek()) == delims.end()){
             advance(); //this char is not a delim
         }
+        //handling tokenization for comments
+        if(peek() == '/' && peekNext() == '/'){
+            while(peek() != '\n'){
+                advance();
+            }
+            std::cout << "SINGLE LINE COMMENT (WARN: NOT INCLUDED IN VECTOR)" << std::endl;
+            
+        }
+        if(peek() == '/' && peekNext() == '*'){
+            while(true){
+
+                advance(); //absorb everything
+
+                if(peek() == '*' && peekNext() == '/'){
+                    advance();
+                    advance();
+
+                    break; //because we found the end
+                }
+            }
+            std::cout << "MULTI LINE COMMENT (WARN: NOT INCLUDED IN VECTOR)" << std::endl;
+        }
+        //handling the tokenization for the actual brackets
         if(peek() == '{' || peek() == '(' || peek() == '[' ){
             Token t;
             t.type = Tok::OPEN;
             t.txt = peek();
 
             toks.push_back(t);
+            std::cout << "OPEN ";
+            std::cout << t.txt << std::endl;
             advance();
         }
         if(peek() == '}' || peek() == ')' || peek() == ']'){
@@ -120,44 +132,23 @@ int main(int argc, char* argv[]){
             if(peek() == ']') t.txt = '[';
 
             toks.push_back(t);
+            std::cout << "CLOSE ";
+            std::cout << t.txt << std::endl;
             advance();
         }
     }
 
     //this all needs to go into some true or false method so that i can return when i need to. For now it is unencapsulated
     //now parse the vector in its entirety.
-    if(toks.at(0).type == Tok::CLOSE){
-        return false; //because the first thing being a close never works
-    }
 
-    for(int p = 0; p < toks.size() - 1; p++){
-        if(expect(toks.at(p), toks.at(p + 1))){
-            std::cout << (tokName(toks.at(p).type)) << std::endl;
-        }
-        else{
-            std::cout << "SOMETHING IS WRONG" << std::endl;
-            break;
-        }
-    }
 
     /*
-    while(not at end of vector list){
-        if(token at pos 0 == type close){
-            return invalid;
-        }
-        if(token at pos 0 == type open){
-            expect another open
-            or expect close of same type (this.txt == that.txt)
+    if something opens
+        either
+        something else has to open next  OR  something of same type must close next
 
-            while(true //can stop on return){
-                if(next token == what is expected){
-                    continue
-                }
-                else return with cerr
-            }
-            return true //because if we reach the end of the loop without cerr it is valid code
-        }
-    }
+    if something closes
+        something of same type opened before  AND  no unclosed pairs remain in between
         */
 }
 
