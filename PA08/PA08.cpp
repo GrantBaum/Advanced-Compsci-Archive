@@ -55,6 +55,17 @@ char advance() {
     return temp;
 }
 
+//THE BIG ONE
+bool expect(){
+    /*
+    while(true){
+        if(type == open){
+            expect(open) or close of same type
+        }
+    }
+    
+    */
+}
 //linker for debugging
   //inline says to the linker that this will always be the same and it can just pick whatever one it wants
     inline std::string tokName(Tok t) {
