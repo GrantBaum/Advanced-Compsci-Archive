@@ -56,14 +56,13 @@ char advance() {
 }
 
 //THE BIG ONE
-bool expect(){
+bool expect(Token t){
     /*
     while(true){
         if(type == open){
             expect(open) or close of same type
         }
     }
-    
     */
 }
 //linker for debugging
