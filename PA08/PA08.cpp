@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <fstream>
 #include <sstream>
+#include <stack>
 
 //collection of the things i wanna look for
 std::unordered_set<char> delims = {'(', ')','{','}','[',']','/'};
@@ -56,14 +57,22 @@ char advance() {
 }
 
 //THE BIG ONE
-bool expect(Token t){
-    /*
-    while(true){
-        if(type == open){
-            expect(open) or close of same type
+bool expect(){
+    std::stack<char> opens;
+    for(const Token& t : toks){
+        if(t.type == Tok::OPEN){
+            opens.push(t.txt);
+        }
+        else if(t.type == Tok::CLOSE){
+            //closing with nothing open, or the wrong type is open
+            if(opens.empty() || opens.top() != t.txt){
+                return false;
+            }
+            opens.pop();
         }
     }
-    */
+    //anything left open was never closed
+    return opens.empty();
 }
 //linker for debugging
   //inline says to the linker that this will always be the same and it can just pick whatever one it wants
@@ -85,7 +94,11 @@ bool expect(Token t){
 int main(int argc, char* argv[]){
     
     //getting the text
-    std::ifstream file("valid.txt");
+    if(argc < 2){
+        std::cerr << "usage: ./PA08 <filename>" << std::endl;
+        return 1;
+    }
+    std::ifstream file(argv[1]);
         if(!file){
             std::cerr << "couldn't open file" << std::endl;
             return 1;
@@ -99,18 +112,25 @@ int main(int argc, char* argv[]){
         if(delims.find(peek()) == delims.end()){
             advance(); //this char is not a delim
         }
+        //a lone '/' (like division) is not a comment, skip it
+        if(peek() == '/' && peekNext() != '/' && peekNext() != '*'){
+            advance();
+        }
         //handling tokenization for comments
         if(peek() == '/' && peekNext() == '/'){
-            while(peek() != '\n'){
+            while(!atEnd() && peek() != '\n'){
                 advance();
             }
-            std::cout << "SINGLE LINE COMMENT (WARN: NOT INCLUDED IN VECTOR)" << std::endl;
-            
+            //std::cout << "SINGLE LINE COMMENT (WARN: NOT INCLUDED IN VECTOR)" << std::endl;
+
         }
         if(peek() == '/' && peekNext() == '*'){
+            advance(); //step past the "/*" so "/*/" doesn't count as closed
             while(true){
 
                 advance(); //absorb everything
+
+                if(atEnd()) break; //comment never closed
 
                 if(peek() == '*' && peekNext() == '/'){
                     advance();
@@ -119,7 +139,7 @@ int main(int argc, char* argv[]){
                     break; //because we found the end
                 }
             }
-            std::cout << "MULTI LINE COMMENT (WARN: NOT INCLUDED IN VECTOR)" << std::endl;
+            //std::cout << "MULTI LINE COMMENT (WARN: NOT INCLUDED IN VECTOR)" << std::endl;
         }
         //handling the tokenization for the actual brackets
         if(peek() == '{' || peek() == '(' || peek() == '[' ){
@@ -128,8 +148,8 @@ int main(int argc, char* argv[]){
             t.txt = peek();
 
             toks.push_back(t);
-            std::cout << "OPEN ";
-            std::cout << t.txt << std::endl;
+            //std::cout << "OPEN ";
+            //std::cout << t.txt << std::endl;
             advance();
         }
         if(peek() == '}' || peek() == ')' || peek() == ']'){
@@ -142,8 +162,8 @@ int main(int argc, char* argv[]){
             if(peek() == ']') t.txt = '[';
 
             toks.push_back(t);
-            std::cout << "CLOSE ";
-            std::cout << t.txt << std::endl;
+            //std::cout << "CLOSE ";
+            //std::cout << t.txt << std::endl;
             advance();
         }
     }
@@ -160,5 +180,11 @@ int main(int argc, char* argv[]){
     if something closes
         something of same type opened before  AND  no unclosed pairs remain in between
         */
+    if(expect()){
+        std::cout << "valid" << std::endl;
+    }
+    else {
+        std::cout << "invalid" << std::endl;
+    }
+    return 0;
 }
-
